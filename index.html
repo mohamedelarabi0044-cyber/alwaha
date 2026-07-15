@@ -1,1 +1,176 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منيو مطعم الواحة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #fdfbf7;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .header {
+            background-color: #a81c1c; /* لون أحمر مقارب للوحة المطعم */
+            color: #fff;
+            text-align: center;
+            padding: 25px 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            color: #ffcccc;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px 15px;
+        }
+        .category {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-top: 4px solid #2e7d32; /* لمسة خضراء */
+        }
+        .category-title {
+            color: #a81c1c;
+            font-size: 22px;
+            margin-top: 0;
+            border-bottom: 2px dashed #eee;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .item-price {
+            background-color: #fdfbf7;
+            color: #a81c1c;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #eee;
+        }
+        .contact {
+            text-align: center;
+            padding: 25px;
+            background: #333;
+            color: #fff;
+            margin-top: 40px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>مطعم الواحة</h1>
+        <p>للأكلة الشعبية أصول - خدمة توصيل الطلبات 24 ساعة</p>
+    </div>
+
+    <div class="container">
+        <div class="category">
+            <h2 class="category-title">سندوتشات الفول</h2>
+            <div class="item">
+                <span class="item-name">فول الواحة</span>
+                <span class="item-price">15 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">فول زيت حار</span>
+                <span class="item-price">16 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">فول اسكندراني</span>
+                <span class="item-price">16 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">فول ع طعمية محشية</span>
+                <span class="item-price">20 ج</span>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 class="category-title">سندوتشات الطعمية</h2>
+            <div class="item">
+                <span class="item-name">طعمية عادي</span>
+                <span class="item-price">15 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">طعمية محشية</span>
+                <span class="item-price">18 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">طعمية بالبيض</span>
+                <span class="item-price">22 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">طعمية ع باذنجان</span>
+                <span class="item-price">20 ج</span>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 class="category-title">سندوتشات البطاطس</h2>
+            <div class="item">
+                <span class="item-name">بطاطس صوابع</span>
+                <span class="item-price">22 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">بطاطس ع جبنة قريش</span>
+                <span class="item-price">24 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">صوابع ع باذنجان</span>
+                <span class="item-price">24 ج</span>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 class="category-title">سفرة الواحة</h2>
+            <div class="item">
+                <span class="item-name">طبق فول حار / حلو</span>
+                <span class="item-price">55 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">طبق أومليت سادة</span>
+                <span class="item-price">40 ج</span>
+            </div>
+            <div class="item">
+                <span class="item-name">طبق طعمية محشية</span>
+                <span class="item-price">15 ج</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact">
+        <p>📍 ١١ شارع النزهة - ناصية تاج الدين السبكي</p>
+        <p>📞 للطلبات: 01154188441 - 0224178052 - 01283156131</p>
+        <p>يوجد انستا وكاش على الرقم: 01154188441</p>
+    </div>
+
+</body>
+</html>
