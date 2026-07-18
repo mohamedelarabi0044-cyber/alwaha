@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منيو مطعم الواحة</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
 
         body {
             font-family: 'Cairo', sans-serif;
@@ -13,29 +13,83 @@
             margin: 0;
             padding: 0;
             color: #333;
+            overflow-x: hidden; /* لمنع السكرول العرضي */
         }
+        
+        /* تصميم الغلاف (الصفحة الأولى) */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #a81c1c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .cover-page h1 {
+            font-size: 45px;
+            font-weight: 900;
+            margin: 0;
+            border: 4px solid white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .cover-page p {
+            font-size: 22px;
+            margin-top: 15px;
+            font-weight: 700;
+        }
+        .start-btn {
+            margin-top: 40px;
+            background-color: #fff;
+            color: #a81c1c;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 12px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* الهيدر الثابت لباقي الصفحات */
         .header {
             background-color: #a81c1c; 
             color: #fff;
             text-align: center;
-            padding: 25px 15px;
+            padding: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none; /* هيظهر مع باقي الصفحات */
         }
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
-            font-weight: 700;
-        }
-        .header p {
-            margin: 5px 0 0;
-            font-size: 16px;
-            color: #f8d7da;
-        }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
+
         .container {
             padding: 15px;
             max-width: 600px;
             margin: auto;
+            padding-bottom: 80px; /* مساحة لزراير التقليب */
         }
+
+        /* إخفاء كل الصفحات بشكل افتراضي ما عدا الغلاف */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         .category {
             background: #fff;
             border-radius: 12px;
@@ -83,237 +137,361 @@
             text-align: center;
             white-space: nowrap;
         }
+        
+        /* زراير التقليب الثابتة تحت */
+        .pagination {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 15px 20px;
+            display: none; /* هيظهر بعد الغلاف */
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .pagination button {
+            background-color: #a81c1c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .page-indicator {
+            font-weight: bold;
+            color: #555;
+            font-size: 16px;
+        }
+
         .notes {
             text-align: center;
             font-size: 14px;
             color: #555;
-            margin-top: 20px;
             padding: 15px;
             background: #f4f4f4;
             border-radius: 10px;
             border: 1px dashed #ccc;
         }
         .notes p { margin: 5px 0; font-weight: bold; }
-        .phones { color: #a81c1c; font-size: 16px; direction: ltr; display: block; margin-top: 10px; font-weight: bold; }
+        .phones { color: #a81c1c; font-size: 16px; display: block; margin-top: 10px; font-weight: bold; }
+        .instapay { margin-top: 15px; color: #27ae60; font-weight: bold; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>فول وفلافل الواحة</h1>
+    <!-- الصفحة صفر: الغلاف -->
+    <div class="page cover-page active" id="page-0">
+        <h1>الواحة</h1>
         <p>للأكلة الشعبية أصول</p>
+        <div class="start-btn" onclick="nextPage()">تصفح المنيو 📖</div>
+    </div>
+
+    <!-- الهيدر هيظهر في الصفحات الداخلية بس -->
+    <div class="header" id="main-header">
+        <h1>فول وفلافل الواحة</h1>
     </div>
 
     <div class="container">
         
-        <div class="category">
-            <h2 class="category-title">سندوتشات الفول</h2>
-            <div class="item"><span class="item-name">فول الواحة</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">فول زيت حار</span><span class="item-price">16 ج</span></div>
-            <div class="item"><span class="item-name">فول زيت زيتون</span><span class="item-price">16 ج</span></div>
-            <div class="item"><span class="item-name">فول اسكندراني</span><span class="item-price">16 ج</span></div>
-            <div class="item"><span class="item-name">فول ع طعمية</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">فول ع طعمية محشية</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">فول ع طعمية ع باذنجان</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">فول ع أومليت</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">فول ع أومليت بسطرمة</span><span class="item-price">35 ج</span></div>
-            <div class="item"><span class="item-name">فول ع باذنجان</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">فول ع بابا غنوج</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">فول بالصلصة</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">فول دبل</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">فول مخصوص</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">فول ع صوابع</span><span class="item-price">22 ج</span></div>
-            <div class="item"><span class="item-name">فول ع بيض مسلوق</span><span class="item-price">25 ج</span></div>
+        <!-- الصفحة 1: الفول -->
+        <div class="page" id="page-1">
+            <div class="category">
+                <h2 class="category-title">سندوتشات الفول</h2>
+                <div class="item"><span class="item-name">فول الواحة</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">فول زيت حار</span><span class="item-price">16 ج</span></div>
+                <div class="item"><span class="item-name">فول زيت زيتون</span><span class="item-price">16 ج</span></div>
+                <div class="item"><span class="item-name">فول اسكندراني</span><span class="item-price">16 ج</span></div>
+                <div class="item"><span class="item-name">فول ع طعمية</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">فول ع طعمية محشية</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">فول ع طعمية ع باذنجان</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">فول ع أومليت</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">فول ع أومليت بسطرمة</span><span class="item-price">35 ج</span></div>
+                <div class="item"><span class="item-name">فول ع باذنجان</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">فول ع بابا غنوج</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">فول بالصلصة</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">فول دبل</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">فول مخصوص</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">فول ع صوابع</span><span class="item-price">22 ج</span></div>
+                <div class="item"><span class="item-name">فول ع بيض مسلوق</span><span class="item-price">25 ج</span></div>
+            </div>
         </div>
 
-        <div class="category">
-            <h2 class="category-title">سندوتشات البطاطس</h2>
-            <div class="item"><span class="item-name">بطاطس صوابع</span><span class="item-price">22 ج</span></div>
-            <div class="item"><span class="item-name">بطاطس ع جبنة قريش</span><span class="item-price">24 ج</span></div>
-            <div class="item"><span class="item-name">صوابع ع باذنجان</span><span class="item-price">24 ج</span></div>
-            <div class="item"><span class="item-name">صوابع رومي</span><span class="item-price">35 ج</span></div>
-            <div class="item"><span class="item-name">صوابع أومليت</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">صوابع أومليت بسطرمة</span><span class="item-price">35 ج</span></div>
-            <div class="item"><span class="item-name">صوابع أومليت بيتزا</span><span class="item-price">40 ج</span></div>
-            <div class="item"><span class="item-name">صوابع ع مقلية</span><span class="item-price">40 ج</span></div>
-            <div class="item"><span class="item-name">صوابع بالبيض</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">صوابع كاتشب</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">صوابع كاتشب مايونيز</span><span class="item-price">22 ج</span></div>
-            <div class="item"><span class="item-name">صوابع بابا غنوج</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">صوابع جمبري</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي رومي</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي بالبيض</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي أومليت</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي كاتشب مايونيز</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي ع بابا غنوج</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">شيبسي ع باذنجان</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">بطاطس بورية</span><span class="item-price">16 ج</span></div>
-            <div class="item"><span class="item-name">بطاطس بورية بالبيض</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">بطاطس بورية بالبيض المقلي</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">بطاطس بورية ع جبنة رومي</span><span class="item-price">35 ج</span></div>
+        <!-- الصفحة 2: البطاطس -->
+        <div class="page" id="page-2">
+            <div class="category">
+                <h2 class="category-title">سندوتشات البطاطس</h2>
+                <div class="item"><span class="item-name">بطاطس صوابع</span><span class="item-price">22 ج</span></div>
+                <div class="item"><span class="item-name">بطاطس ع جبنة قريش</span><span class="item-price">24 ج</span></div>
+                <div class="item"><span class="item-name">صوابع ع باذنجان</span><span class="item-price">24 ج</span></div>
+                <div class="item"><span class="item-name">صوابع رومي</span><span class="item-price">35 ج</span></div>
+                <div class="item"><span class="item-name">صوابع أومليت</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">صوابع أومليت بسطرمة</span><span class="item-price">35 ج</span></div>
+                <div class="item"><span class="item-name">صوابع أومليت بيتزا</span><span class="item-price">40 ج</span></div>
+                <div class="item"><span class="item-name">صوابع ع مقلية</span><span class="item-price">40 ج</span></div>
+                <div class="item"><span class="item-name">صوابع بالبيض</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">صوابع كاتشب</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">صوابع كاتشب مايونيز</span><span class="item-price">22 ج</span></div>
+                <div class="item"><span class="item-name">صوابع بابا غنوج</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">صوابع جمبري</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">شيبسي</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">شيبسي رومي</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">بطاطس بورية</span><span class="item-price">16 ج</span></div>
+                <div class="item"><span class="item-name">بطاطس بورية ع جبنة رومي</span><span class="item-price">35 ج</span></div>
+            </div>
         </div>
 
-        <div class="category">
-            <h2 class="category-title">سندوتشات الطعمية</h2>
-            <div class="item"><span class="item-name">طعمية عادي</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">طعمية كفتة</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">طعمية محشية</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">طعمية بالبيض</span><span class="item-price">22 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع باذنجان</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع مسقعة</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع بابا غنوج</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع بطاطس</span><span class="item-price">24 ج</span></div>
-            <div class="item"><span class="item-name">طعمية بالبسطرمة</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">طعمية كيري</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع أمليت</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع أمليت بسطرمة</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع شيبسي</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طعمية ع جبنة</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طعمية دوبل</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">طعمية عين كتكوت</span><span class="item-price">20 ج</span></div>
+        <!-- الصفحة 3: الطعمية -->
+        <div class="page" id="page-3">
+            <div class="category">
+                <h2 class="category-title">سندوتشات الطعمية</h2>
+                <div class="item"><span class="item-name">طعمية عادي</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">طعمية كفتة</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">طعمية محشية</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">طعمية بالبيض</span><span class="item-price">22 ج</span></div>
+                <div class="item"><span class="item-name">طعمية ع باذنجان</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طعمية ع مسقعة</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طعمية ع بابا غنوج</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طعمية ع بطاطس</span><span class="item-price">24 ج</span></div>
+                <div class="item"><span class="item-name">طعمية بالبسطرمة</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">طعمية كيري</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">طعمية ع أمليت</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">طعمية دوبل</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">طعمية عين كتكوت</span><span class="item-price">20 ج</span></div>
+            </div>
         </div>
 
-        <div class="category">
-            <h2 class="category-title">سندوتشات الأومليت</h2>
-            <div class="item"><span class="item-name">بيض مسلوق</span><span class="item-price">16 ج</span></div>
-            <div class="item"><span class="item-name">بيض ع باذنجان</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">بيض ع بابا غنوج</span><span class="item-price">22 ج</span></div>
-            <div class="item"><span class="item-name">بيض مدحرج</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">بيض أومليت</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">أومليت بسطرمة</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">أومليت رومي</span><span class="item-price">30 ج</span></div>
-            <div class="item"><span class="item-name">أومليت سوسيس</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">أومليت خضار</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">أومليت بيتزا</span><span class="item-price">40 ج</span></div>
-            <div class="item"><span class="item-name">أومليت أباتشي</span><span class="item-price">40 ج</span></div>
-        </div>
-
-        <div class="category">
-            <h2 class="category-title">سندوتشات متنوع</h2>
-            <div class="item"><span class="item-name">جبنة قريش</span><span class="item-price">18 ج</span></div>
-            <div class="item"><span class="item-name">جبنة بالبيض</span><span class="item-price">22 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش باذنجان</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش مسقعة</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش بابا غنوج</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش عجة بلدي</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش شكشوكة</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش شكشوكة مخصوص</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش عجة فرنساوي</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">ديناميت</span><span class="item-price">35 ج</span></div>
-            <div class="item"><span class="item-name">سندوتش جبنة مقلية</span><span class="item-price">35 ج</span></div>
-        </div>
-
-        <div class="category">
-            <h2 class="category-title">أقراص الطعمية</h2>
-            <div class="item"><span class="item-name">قرص طعمية</span><span class="item-price">3 ج</span></div>
-            <div class="item"><span class="item-name">قرص سادة كبير</span><span class="item-price">6 ج</span></div>
-            <div class="item"><span class="item-name">قرص طعمية كفتة</span><span class="item-price">3 ج</span></div>
-            <div class="item"><span class="item-name">قرص طعمية محشية</span><span class="item-price">8 ج</span></div>
-            <div class="item"><span class="item-name">قرص عجة</span><span class="item-price">S: 15 | L: 25 ج</span></div>
-            <div class="item"><span class="item-name">قرص طعمية كيري</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">قرص طعمية عين كتكوت</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">قرص طعمية بالبسطرمة</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">قرص أماطي</span><span class="item-price">24 ج</span></div>
-        </div>
-
-        <div class="category">
-            <h2 class="category-title">سفره الواحة</h2>
-            <div class="item"><span class="item-name">طبق فول حار / حلو</span><span class="item-price">55 ج</span></div>
-            <div class="item"><span class="item-name">طبق فول زيت زيتون</span><span class="item-price">55 ج</span></div>
-            <div class="item"><span class="item-name">طبق فول اسكندراني</span><span class="item-price">55 ج</span></div>
-            <div class="item"><span class="item-name">طبق طعمية</span><span class="item-price">12 ج</span></div>
-            <div class="item"><span class="item-name">طبق طعمية محشية حسب الطلب</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">طبق طعمية كيري</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طبق بيض</span><span class="item-price">15 ج</span></div>
-            <div class="item"><span class="item-name">طبق بابا غنوج</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طبق بطاطس</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">طبق مسقعة</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طبق باذنجان</span><span class="item-price">12 ج</span></div>
-            <div class="item"><span class="item-name">طبق شكشوكة</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طبق شكشوكة مخصوص</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">طبق عجة</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت سادة</span><span class="item-price">S: 30 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق اباتشي</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق طرنشات</span><span class="item-price">S: 15 | L: 20 ج</span></div>
-            <div class="item"><span class="item-name">طبق أماطي</span><span class="item-price">S: 15 | L: 20 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت بسطرمة</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت بيتزا</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت خضار</span><span class="item-price">S: 30 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق مقلية</span><span class="item-price">40 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت رومي</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق فول زبدة</span><span class="item-price">45 ج</span></div>
-            <div class="item"><span class="item-name">طبق جمبري</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت سوسيس</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق طحينة</span><span class="item-price">S: 20 | L: 25 ج</span></div>
-        </div>
-
-        <div class="category">
-            <h2 class="category-title">ركن العلب</h2>
-            <div class="item"><span class="item-name">علبة فول سادة</span><span class="item-price">S: 25 | L: 30 ج</span></div>
-            <div class="item"><span class="item-name">علبة فول زيت زيتون</span><span class="item-price">S: 30 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">فول زيت حار علبة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
-            <div class="item"><span class="item-name">علبة فول الواحة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
-            <div class="item"><span class="item-name">علبة فول محوج</span><span class="item-price">S: 30 | L: 35 ج</span></div>
-            <div class="item"><span class="item-name">علبة فول اسكندراني</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">فول بالبيض علبة</span><span class="item-price">S: 38 | L: 45 ج</span></div>
-            <div class="item"><span class="item-name">فول أومليت علبة</span><span class="item-price">S: 38 | L: 45 ج</span></div>
-            <div class="item"><span class="item-name">فول بالبسطرمة علبة</span><span class="item-price">S: 40 | L: 50 ج</span></div>
-            <div class="item"><span class="item-name">عجينة علبة</span><span class="item-price">S: 15 | L: 20 ج</span></div>
-            <div class="item"><span class="item-name">مسقعة علبة</span><span class="item-price">S: 25 | L: 32 ج</span></div>
-            <div class="item"><span class="item-name">جبنة قريش علبة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
-            <div class="item"><span class="item-name">بورية علبة</span><span class="item-price">S: 25 | L: 35 ج</span></div>
-            <div class="item"><span class="item-name">باذنجان علبة</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">شكشوكة علبة</span><span class="item-price">S: 25 | L: 35 ج</span></div>
+        <!-- الصفحة 4: الأومليت والمتنوع -->
+        <div class="page" id="page-4">
+            <div class="category">
+                <h2 class="category-title">سندوتشات الأومليت</h2>
+                <div class="item"><span class="item-name">بيض مسلوق</span><span class="item-price">16 ج</span></div>
+                <div class="item"><span class="item-name">بيض مدحرج</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">بيض أومليت</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">أومليت بسطرمة</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">أومليت رومي</span><span class="item-price">30 ج</span></div>
+                <div class="item"><span class="item-name">أومليت سوسيس</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">أومليت خضار</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">أومليت بيتزا</span><span class="item-price">40 ج</span></div>
+                <div class="item"><span class="item-name">أومليت أباتشي</span><span class="item-price">40 ج</span></div>
+            </div>
             
-            <div class="item"><span class="item-name">باكيت صوابع</span><span class="item-price">S: 20 | M: 25 | L: 35 ج</span></div>
-            <div class="item"><span class="item-name">باكيت شيبسي</span><span class="item-price">S: 20 | M: 25 | L: 30 ج</span></div>
-            <div class="item"><span class="item-name">باكيت بطاطس صوابع</span><span class="item-price">S: 25 | M: 30 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">باكيت بطاطس جمبري</span><span class="item-price">S: 25 | M: 30 | L: 40 ج</span></div>
-            
-            <div class="item"><span class="item-name">طبق بسطرمة</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت</span><span class="item-price">S: 25 | L: 30 ج</span></div>
-            <div class="item"><span class="item-name">طبق أومليت رومي</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق أمليت خضار</span><span class="item-price">S: 30 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">طبق بيتزا</span><span class="item-price">S: 35 | L: 40 ج</span></div>
-            <div class="item"><span class="item-name">علبة فول بالصلصة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
+            <div class="category">
+                <h2 class="category-title">سندوتشات متنوع</h2>
+                <div class="item"><span class="item-name">جبنة قريش</span><span class="item-price">18 ج</span></div>
+                <div class="item"><span class="item-name">سندوتش باذنجان / مسقعة</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">سندوتش بابا غنوج / شكشوكة</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">سندوتش عجة بلدي</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">ديناميت</span><span class="item-price">35 ج</span></div>
+                <div class="item"><span class="item-name">سندوتش جبنة مقلية</span><span class="item-price">35 ج</span></div>
+            </div>
         </div>
 
-        <div class="category">
-            <h2 class="category-title">ركن السلطات والمخللات</h2>
-            <div class="item"><span class="item-name">سلطة بلدي</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">سلطة سندوتش</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">سلطة طحينة</span><span class="item-price">25 ج</span></div>
-            <div class="item"><span class="item-name">طبق مخلل مخصوص</span><span class="item-price">S: 10 | L: 13 ج</span></div>
-            
-            <div class="item"><span class="item-name">طرشي</span><span class="item-price">S: 5 | M: 10 | L: 15 ج</span></div>
-            
-            <div class="item"><span class="item-name">طبق باذنجان</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">طبق طرنشات</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">علبة باذنجان مخلل مقلي</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">طحينة</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">بابا غنوج</span><span class="item-price">S: 15 | L: 20 ج</span></div>
-            <div class="item"><span class="item-name">خيار مخلل / طبق بصل / ليمون</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">طرنشات</span><span class="item-price">S: 10 | L: 15 ج</span></div>
-            <div class="item"><span class="item-name">رغيف عيش</span><span class="item-price">3.5 ج</span></div>
-            <div class="item"><span class="item-name">رغيف عيش شامي</span><span class="item-price">2 ج</span></div>
+        <!-- الصفحة 5: أقراص الطعمية -->
+        <div class="page" id="page-5">
+            <div class="category">
+                <h2 class="category-title">أقراص الطعمية</h2>
+                <div class="item"><span class="item-name">قرص طعمية</span><span class="item-price">3 ج</span></div>
+                <div class="item"><span class="item-name">قرص سادة كبير</span><span class="item-price">6 ج</span></div>
+                <div class="item"><span class="item-name">قرص طعمية كفتة</span><span class="item-price">3 ج</span></div>
+                <div class="item"><span class="item-name">قرص طعمية محشية</span><span class="item-price">8 ج</span></div>
+                <div class="item"><span class="item-name">قرص عجة</span><span class="item-price">S: 15 | L: 25 ج</span></div>
+                <div class="item"><span class="item-name">قرص طعمية كيري</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">قرص طعمية عين كتكوت</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">قرص طعمية بالبسطرمة</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">قرص أماطي</span><span class="item-price">24 ج</span></div>
+            </div>
         </div>
 
-        <div class="category">
-            <h2 class="category-title">ركن المشروبات</h2>
-            <div class="item"><span class="item-name">كانز كبيرة (كولا - ميرندا - سفن)</span><span class="item-price">20 ج</span></div>
-            <div class="item"><span class="item-name">مياة معدنية</span><span class="item-price">10 ج</span></div>
+        <!-- الصفحة 6: سفرة الواحة 1 -->
+        <div class="page" id="page-6">
+            <div class="category">
+                <h2 class="category-title">سفره الواحة (أطباق)</h2>
+                <div class="item"><span class="item-name">طبق فول حار / حلو</span><span class="item-price">55 ج</span></div>
+                <div class="item"><span class="item-name">طبق فول زيت زيتون</span><span class="item-price">55 ج</span></div>
+                <div class="item"><span class="item-name">طبق فول اسكندراني</span><span class="item-price">55 ج</span></div>
+                <div class="item"><span class="item-name">طبق طعمية</span><span class="item-price">12 ج</span></div>
+                <div class="item"><span class="item-name">طبق طعمية محشية </span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">طبق طعمية كيري</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طبق بيض</span><span class="item-price">15 ج</span></div>
+                <div class="item"><span class="item-name">طبق بابا غنوج</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طبق بطاطس</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">طبق مسقعة</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طبق باذنجان</span><span class="item-price">12 ج</span></div>
+                <div class="item"><span class="item-name">طبق شكشوكة</span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">طبق عجة</span><span class="item-price">20 ج</span></div>
+            </div>
         </div>
 
-        <div class="notes">
-            <p>جميع السندوتشات (بلدي - شامي - فينو)</p>
-            <p>إضافة سلطة بلدي أو طرنشات على السندوتش يتم إضافة 3 ج</p>
-            <p>خدمة توصيل الطلبات - 11 شارع النزهة ناصية تاج الدين السبكي</p>
-            <span class="phones">01154188441 - 0224178052</span>
-            <span class="phones">01283156131 - 01070341501</span>
-            <span class="phones">01128964794 - 01155192984</span>
+        <!-- الصفحة 7: سفرة الواحة 2 -->
+        <div class="page" id="page-7">
+            <div class="category">
+                <h2 class="category-title">سفره الواحة (أومليت وإضافات)</h2>
+                <div class="item"><span class="item-name">طبق أومليت سادة</span><span class="item-price">S: 30 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق اباتشي</span><span class="item-price">S: 35 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق طرنشات</span><span class="item-price">S: 15 | L: 20 ج</span></div>
+                <div class="item"><span class="item-name">طبق أماطي</span><span class="item-price">S: 15 | L: 20 ج</span></div>
+                <div class="item"><span class="item-name">طبق أومليت بسطرمة</span><span class="item-price">S: 35 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق أومليت بيتزا</span><span class="item-price">S: 35 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق أومليت خضار</span><span class="item-price">S: 30 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق مقلية</span><span class="item-price">40 ج</span></div>
+                <div class="item"><span class="item-name">طبق أومليت رومي</span><span class="item-price">S: 35 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق فول زبدة</span><span class="item-price">45 ج</span></div>
+                <div class="item"><span class="item-name">طبق جمبري</span><span class="item-price">25 ج</span></div>
+                <div class="item"><span class="item-name">طبق أومليت سوسيس</span><span class="item-price">S: 35 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">طبق طحينة</span><span class="item-price">S: 20 | L: 25 ج</span></div>
+            </div>
+        </div>
+
+        <!-- الصفحة 8: ركن العلب 1 -->
+        <div class="page" id="page-8">
+            <div class="category">
+                <h2 class="category-title">ركن العلب (فول)</h2>
+                <div class="item"><span class="item-name">علبة فول سادة</span><span class="item-price">S: 25 | L: 30 ج</span></div>
+                <div class="item"><span class="item-name">علبة فول زيت زيتون</span><span class="item-price">S: 30 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">فول زيت حار علبة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
+                <div class="item"><span class="item-name">علبة فول الواحة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
+                <div class="item"><span class="item-name">علبة فول اسكندراني</span><span class="item-price">S: 35 | L: 40 ج</span></div>
+                <div class="item"><span class="item-name">فول بالبيض علبة</span><span class="item-price">S: 38 | L: 45 ج</span></div>
+                <div class="item"><span class="item-name">فول بالبسطرمة علبة</span><span class="item-price">S: 40 | L: 50 ج</span></div>
+                <div class="item"><span class="item-name">علبة فول بالصلصة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
+            </div>
+        </div>
+
+        <!-- الصفحة 9: ركن العلب 2 -->
+        <div class="page" id="page-9">
+            <div class="category">
+                <h2 class="category-title">ركن العلب (إضافات)</h2>
+                <div class="item"><span class="item-name">عجينة علبة</span><span class="item-price">S: 15 | L: 20 ج</span></div>
+                <div class="item"><span class="item-name">مسقعة علبة</span><span class="item-price">S: 25 | L: 32 ج</span></div>
+                <div class="item"><span class="item-name">جبنة قريش علبة</span><span class="item-price">S: 30 | L: 35 ج</span></div>
+                <div class="item"><span class="item-name">باذنجان علبة</span><span class="item-price">S: 10 | L: 15 ج</span></div>
+                <div class="item"><span class="item-name">شكشوكة علبة</span><span class="item-price">S: 25 | L: 35 ج</span></div>
+                <div class="item"><span class="item-name">باكيت صوابع</span><span class="item-price">S: 20 | M: 25 | L: 35 ج</span></div>
+                <div class="item"><span class="item-name">باكيت شيبسي</span><span class="item-price">S: 20 | M: 25 | L: 30 ج</span></div>
+                <div class="item"><span class="item-name">باكيت بطاطس جمبري</span><span class="item-price">S: 25 | M: 30 | L: 40 ج</span></div>
+            </div>
+        </div>
+
+        <!-- الصفحة 10: السلطات والمشروبات والملاحظات -->
+        <div class="page" id="page-10">
+            <div class="category">
+                <h2 class="category-title">السلطات والمشروبات</h2>
+                <div class="item"><span class="item-name">سلطة بلدي</span><span class="item-price">S: 10 | L: 15 ج</span></div>
+                <div class="item"><span class="item-name">طبق مخلل مخصوص</span><span class="item-price">S: 10 | L: 13 ج</span></div>
+                <div class="item"><span class="item-name">طرشي</span><span class="item-price">S: 5 | M: 10 | L: 15 ج</span></div>
+                <div class="item"><span class="item-name">بابا غنوج</span><span class="item-price">S: 15 | L: 20 ج</span></div>
+                <div class="item"><span class="item-name">رغيف عيش</span><span class="item-price">3.5 ج</span></div>
+                <div class="item"><span class="item-name">كانز كبيرة </span><span class="item-price">20 ج</span></div>
+                <div class="item"><span class="item-name">مياة معدنية</span><span class="item-price">10 ج</span></div>
+            </div>
+
+            <div class="notes">
+                <p>جميع السندوتشات (بلدي - شامي - فينو)</p>
+                <p>إضافة سلطة بلدي أو طرنشات يتم إضافة 3 ج</p>
+                <p>11 شارع النزهة ناصية تاج الدين السبكي</p>
+                <span class="phones">للتوصيل: <span dir="ltr">01154188441 - 0224178052</span></span>
+                <span class="phones">للتوصيل: <span dir="ltr">01283156131 - 01070341501</span></span>
+                <span class="phones">للتوصيل: <span dir="ltr">01128964794 - 01155192984</span></span>
+                <p class="instapay">يوجد انستا باي وكاش علي (01154188441)</p>
+            </div>
         </div>
 
     </div>
+
+    <!-- لوحة التقليب السفلية -->
+    <div class="pagination" id="pagination">
+        <button onclick="nextPage()" id="nextBtn">التالي</button>
+        <span class="page-indicator" id="pageIndicator">1 / 10</span>
+        <button onclick="prevPage()" id="prevBtn">السابق</button>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const totalPages = 10; // عدد الصفحات بدون الغلاف
+        
+        function updateUI() {
+            // إخفاء كل الصفحات وإظهار الصفحة الحالية بس
+            document.querySelectorAll('.page').forEach((page, index) => {
+                page.classList.remove('active');
+                if (index === currentPage) {
+                    page.classList.add('active');
+                }
+            });
+
+            const pagination = document.getElementById('pagination');
+            const header = document.getElementById('main-header');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const indicator = document.getElementById('pageIndicator');
+
+            // لو إحنا في صفحة الغلاف (رقم 0)
+            if (currentPage === 0) {
+                pagination.style.display = 'none';
+                header.style.display = 'none';
+            } else {
+                pagination.style.display = 'flex';
+                header.style.display = 'block';
+                indicator.innerText = currentPage + " / " + totalPages;
+                
+                // تظبيط زراير التالي والسابق
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === totalPages;
+            }
+            
+            // سكرول لأول الصفحة لما يقلب
+            window.scrollTo(0, 0);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updateUI();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updateUI();
+            }
+        }
+
+        // --- خاصية السحب (Swipe) للموبايل ---
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            // سحب يمين أو شمال (ولازم يتخطى مسافة معينة عشان ميعتبرش لمسة عادية)
+            if (currentPage !== 0) {
+                if (touchendX < touchstartX - 50) {
+                    // سحب للشمال (التالي)
+                    nextPage();
+                }
+                if (touchendX > touchstartX + 50) {
+                    // سحب لليمين (السابق)
+                    prevPage();
+                }
+            }
+        }
+    </script>
 </body>
 </html>
